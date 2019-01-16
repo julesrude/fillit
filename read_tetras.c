@@ -22,62 +22,80 @@
 #define COLOR_CYAN    "\x1b[36m"
 #define COLOR_RESET   "\x1b[0m"
 
-void		lst_tetro_addback(t_tetromino **head, t_tetromino *new)
-{
-	t_tetromino	**temp;
+#define HIGH	hashes[0][0]
+#define LOW		hashes[0][3]
 
-	temp = NULL;
-	if (head == NULL || new == NULL)
-		return ;
-	temp = head;
-	while (*temp != NULL)
-		temp = &(*temp)->next;
-	(*temp) = new;
-}
+/*
+** Detects hashtags "#" in the shape (4x4 square) and records their
+** addresses to "int **hashes"
+*/
 
-t_tetromino	*lst_tetro_new(char **shape)
+void		dots_detector(char **shape, int **hashes)
 {
-	t_tetromino *new;
 	int			i;
+	int			j;
+	int			k;
 
-	new = NULL;
 	i = 0;
-	if (!shape || !*shape)
-		return (NULL);
-	if (!(new = (t_tetromino *)malloc(sizeof(t_tetromino))))
-		return (NULL);
-	new->figure = (char **)malloc(4 * sizeof(char *));
+	j = 0;
+	k = 0;
+	hashes[0] = (int *)malloc(4 * sizeof(int));
+	hashes[1] = (int *)malloc(4 * sizeof(int));
 	while (i < 4)
 	{
-		new->figure[i] = shape[i];
+		while (j < 4)
+		{
+			if (shape[i][j] == '#')
+			{
+				hashes[0][k] = i;
+				hashes[1][k] = j;
+				k++;
+			}
+			j++;
+		}
+		j = 0;
 		i++;
 	}
-	free(shape); //fdsflfsklhjsfghghklsgjhkgdjhjhsfd
-	new->width = 0;
-	new->height = 0;
-	new->x = 0;
-	new->y = 0;
-	new->next = NULL;
-	return (new);
 }
 
-char		**shape_correction(char **shape)
+/*
+** Makes subrectangle from the 4x4 square.
+** Writes "width", "height" and "figure" to the tetrimino.
+*/
+
+void		shape_analisys(char **shape, t_tetromino *new)
 {
-	char		**result;
-	int			height;
+	int			**hashes;
+	int			left;
+	int			right;
 	int			i;
+	int			j;
 
-	height = 4;
-	i = 0;
-	result = (char **)malloc(height * sizeof(char *));
-	while(i < 4)
+	i = -1;
+	j = -1;
+	hashes = (int **)malloc(2 * sizeof(int *));
+	dots_detector(shape, hashes);
+	left = ft_minarr(hashes[1], 4);
+	right = ft_maxarr(hashes[1], 4);
+	new->height = LOW - HIGH + 1;
+	new->width = right - left + 1;
+	new->figure = (char **)malloc(new->height * sizeof(char *));
+	while (++i < new->height)
 	{
-		result[i] = shape[i];
-		i++;
+		new->figure[i] = (char *)malloc(new->width * sizeof(char));
+		while (++j < new->width)
+			new->figure[i][j] = shape[HIGH + i][left + j];
+		j = -1;
 	}
-	printf(COLOR_YELLOW "%p\n" COLOR_RESET, shape[3]);
-	return (result);
+	ft_arrfree((void **)shape, 4);
+	ft_arrfree((void **)hashes, 2);
+	free(hashes);
 }
+
+/*
+** Takes fd, launches cycle for every tetromino to
+** write it into list.
+*/
 
 int			read_file(int fd, t_tetromino **head)
 {
@@ -93,8 +111,7 @@ int			read_file(int fd, t_tetromino **head)
 	{
 		if (j == 0 || *line == '\0')
 		{
-			tetro = lst_tetro_new(shape_correction(shape)); //somethong to modify here to make the 
-			printf(COLOR_YELLOW "%p\n" COLOR_RESET, tetro);			
+			tetro = lst_tetro_new(shape);
 			lst_tetro_addback(head, tetro);
 			free(line);
 			if (j == 0)

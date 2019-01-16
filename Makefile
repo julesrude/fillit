@@ -1,5 +1,5 @@
 NAME = fillit
-FUNCS = main.c read_tetras.c
+FUNCS = main.c read_tetras.c to_put_in_libft.c lst_tetro.c
 OBJ = $(FUNCS:.c=.o)
 HEADER = includes/
 
