@@ -42,3 +42,18 @@ t_tetromino	*lst_tetro_new(char **shape)
 	new->next = NULL;
 	return (new);
 }
+
+int		lst_tetro_size(t_tetromino *begin_list)
+{
+	int		i;
+	t_tetromino	*t;
+
+	i = 0;
+	t = begin_list;
+	while (t != NULL)
+	{
+		i++;
+		t = t->next;
+	}
+	return (i);
+}

@@ -61,3 +61,34 @@ void	ft_arrfree(void **arr, int elems)
 		i++;
 	}
 }
+
+int		ft_sqrtint(unsigned int i)
+{
+	unsigned int	root;
+
+	root = 0;
+	while(root * root <= i)
+		root++;
+	return(root - 1);
+}
+
+char	**ft_arrdup(char **arr, int height, int width)
+{
+	char	**copy;
+	int		i;
+
+	i = 0;
+	copy = NULL;
+	if (arr == NULL)
+		return (NULL);
+	if((copy = (char **)malloc(sizeof(char*) * height)))
+	{
+		while(i < height)
+		{
+			copy[i] = (char *)malloc(sizeof(char) * width);
+			ft_memcpy(copy[i], arr[i], width);
+			i++;
+		}
+	}
+	return (copy);
+}
