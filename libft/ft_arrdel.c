@@ -1,23 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_len_word.c                                      :+:      :+:    :+:   */
+/*   ft_arrdel.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mivasche <mivasche@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/30 12:40:06 by mivasche          #+#    #+#             */
-/*   Updated: 2018/11/30 12:40:47 by mivasche         ###   ########.fr       */
+/*   Created: 2019/01/26 19:12:28 by yruda             #+#    #+#             */
+/*   Updated: 2019/01/26 19:12:34 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_len_word(char const *s, char c)
+/*
+** frees and sets to NULL elements of a 2-story array
+*/
+
+void	ft_arrdel(void **arr, int elems)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while (s[i] != c && s[i])
+	while (i < elems)
+	{
+		free(arr[i]);
+		arr[i] = NULL;
 		i++;
-	return (i);
+	}
 }

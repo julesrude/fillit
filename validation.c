@@ -1,24 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fillit.c                                        :+:      :+:    :+:   */
+/*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mivasche <mivasche@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/17 15:41:43 by mivasche          #+#    #+#             */
-/*   Updated: 2019/01/18 15:33:25 by mivasche         ###   ########.fr       */
+/*   Updated: 2019/01/26 19:31:12 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_fillit.h"
+#include "tetrominos.h"
 
-int		ft_diff_num(int a, int b, int c, int d)
+int			ft_diff_num(int a, int b, int c, int d)
 {
 	return ((a == c && (b - d == 1 || d - b == 1)) || (b == d && (c - a == 1 ||
 		a - c == 1)));
 }
 
-int		ft_check_connect(int **tetr)
+int			ft_check_connect(int **tetr)
 {
 	int		ind_a;
 	int		ret_num;
@@ -41,7 +41,7 @@ int		ft_check_connect(int **tetr)
 	return (ret_num);
 }
 
-int		ft_tetrimino_connect(char **tetr, int ind, int cha, int ind_save)
+int			ft_tetrimino_connect(char **tetr, int ind, int cha, int ind_save)
 {
 	int		count;
 	int		**save_cha;
@@ -64,77 +64,65 @@ int		ft_tetrimino_connect(char **tetr, int ind, int cha, int ind_save)
 		ind++;
 	}
 	count = ft_check_connect(save_cha);
-	ft_del_int(save_cha, 4);
+	ft_arrdel((void **)save_cha, 4);
 	free(save_cha);
+	ft_arrdel((void **)tetr, 4);
 	return (count == 6 || count == 8 ? 1 : 0);
 }
 
-int		ft_valid_file(char **tetrimino, int index, int index_char, int end)
+int			ft_valid_file(char **tetr, int index, int index_char)
 {
 	int		dot;
 	int		sharp;
 
 	dot = 0;
 	sharp = 0;
-	while (index < 4 && tetrimino[index])
+	while (*tetr != NULL && index < 4 && tetr[index])
 	{
-		if (ft_strlen(tetrimino[index]) != 4)
-			return (0);
-		while (tetrimino[index][index_char])
+		if (ft_strlen(tetr[index]) != 4)
+			break ;
+		while (tetr[index][index_char])
 		{
-			if (tetrimino[index][index_char] == '.')
+			if (tetr[index][index_char] == '.')
 				dot++;
-			if (tetrimino[index][index_char] == '#')
+			if (tetr[index][index_char] == '#')
 				sharp++;
 			index_char++;
 		}
 		index_char = 0;
 		index++;
 	}
-	if (dot != 12 || sharp != 4)
+	if (dot != 12 || sharp != 4 || ft_tetrimino_connect(tetr, 0, -1, 0) != 1)
 		return (0);
-	if (ft_tetrimino_connect(tetrimino, 0, -1, 0))
-		return (1);
-	return (0);
+	return (1);
 }
 
-int		ft_fillit(char **tetrimino, int fd, int num_str, int end_tetr)
+int			ft_validation(char **tetr, int fd, int num_str, int end_tetr)
 {
 	char	*buff;
 	int		check;
 
 	check = 0;
-	tetrimino = (char **)malloc(sizeof(char *) * 4);
+	tetr = (char **)malloc(sizeof(char *) * 4);
+	*tetr = NULL;
 	while ((get_next_line(fd, &buff)))
 	{
-		if (++num_str >= 5)
+		if (++num_str == 5)
+		{
+			del_str_all(tetr, buff);
 			return (0);
+		}
 		if (buff[0] != 0)
-			tetrimino[num_str] = ft_strdup(buff);
+			tetr[num_str] = ft_strdup(buff);
 		else
 		{
 			check++;
-			if (ft_valid_file(tetrimino, 0, 0, num_str))
-				end_tetr++;
-			ft_del_str(tetrimino);
+			(ft_valid_file(tetr, 0, 0)) == 1 ? end_tetr++ : 0;
 			num_str = -1;
 		}
 		free(buff);
 	}
-	(ft_valid_file(tetrimino, 0, 0, num_str)) == 1 ? end_tetr++ : 0;
-	ft_del_str(tetrimino);
-	free(tetrimino);
-	return (end_tetr == (check + 1) && end_tetr <= 26 ? 1 : 0);
-}
-
-int main()
-{
-	int fd;
-	char **tetrimino;
-
-	if((fd = open("/Users/yruda/fillit/fillit_checker/", O_RDONLY)))
-		printf("%zd\n", read(fd, (void*)0, 0)/*ft_fillit(tetrimino, fd, -1, 0)*/);
-	else
-		printf("error\n");
-	system("leaks a.out");
+	(ft_valid_file(tetr, 0, 0)) == 1 ? end_tetr++ : 0;
+	free(tetr);
+	return ((end_tetr == (check + 1)) ? 1 : 0);
 }

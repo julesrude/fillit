@@ -1,28 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_striter.c                                       :+:      :+:    :+:   */
+/*   ft_minarr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mivasche <mivasche@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/06 14:43:26 by mivasche          #+#    #+#             */
-/*   Updated: 2018/11/30 13:29:46 by mivasche         ###   ########.fr       */
+/*   Created: 2019/01/26 19:11:14 by yruda             #+#    #+#             */
+/*   Updated: 2019/01/26 19:18:15 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_striter(char *s, void (*f)(char *))
+int		ft_minarr(int *a, int n)
 {
-	int i;
+	int min;
+	int	i;
 
-	i = 0;
-	if (s && f)
+	i = 1;
+	min = *a;
+	while (i < n)
 	{
-		while (s[i])
-		{
-			f(&s[i]);
-			i++;
-		}
+		if (min > a[i])
+			min = a[i];
+		i++;
 	}
+	return (min);
 }

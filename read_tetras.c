@@ -3,34 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   read_tetras.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yruda <yruda@student.unit.ua>              +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 21:02:38 by yruda             #+#    #+#             */
-/*   Updated: 2019/01/15 21:02:41 by yruda            ###   ########.fr       */
+/*   Updated: 2019/01/26 19:02:38 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tetrominos.h"
 #include "get_next_line.h"
 
-#include <stdio.h>
-#define COLOR_RED     "\x1b[31m"
-#define COLOR_GREEN   "\x1b[32m"
-#define COLOR_YELLOW  "\x1b[33m"
-#define COLOR_BLUE    "\x1b[34m"
-#define COLOR_MAGENTA "\x1b[35m"
-#define COLOR_CYAN    "\x1b[36m"
-#define COLOR_RESET   "\x1b[0m"
-
 #define HIGH	hashes[0][0]
 #define LOW		hashes[0][3]
 
 /*
-** Detects hashtags "#" in the shape (4x4 square) and records their
+** Detects sharps "#" in the shape (4x4 square) and records their
 ** addresses to "int **hashes"
 */
 
-void		dots_detector(char **shape, int **hashes)
+void		sharps_detector(char **shape, int **hashes)
 {
 	int			i;
 	int			j;
@@ -74,7 +65,7 @@ void		shape_analisys(char **shape, t_tetromino *new)
 	i = -1;
 	j = -1;
 	hashes = (int **)malloc(2 * sizeof(int *));
-	dots_detector(shape, hashes);
+	sharps_detector(shape, hashes);
 	left = ft_minarr(hashes[1], 4);
 	right = ft_maxarr(hashes[1], 4);
 	new->height = LOW - HIGH + 1;
@@ -87,8 +78,8 @@ void		shape_analisys(char **shape, t_tetromino *new)
 			new->figure[i][j] = shape[HIGH + i][left + j];
 		j = -1;
 	}
-	ft_arrfree((void **)shape, 4);
-	ft_arrfree((void **)hashes, 2);
+	ft_arrdel((void **)shape, 4);
+	ft_arrdel((void **)hashes, 2);
 	free(hashes);
 }
 
@@ -97,7 +88,7 @@ void		shape_analisys(char **shape, t_tetromino *new)
 ** write it into list.
 */
 
-int			read_file(int fd, t_tetromino **head)
+int			read_file(int fd)
 {
 	t_tetromino	*tetro;
 	char		*line;
@@ -112,10 +103,10 @@ int			read_file(int fd, t_tetromino **head)
 		if (j == 0 || *line == '\0')
 		{
 			tetro = lst_tetro_new(shape);
-			lst_tetro_addback(head, tetro);
-			free(line);
+			lst_tetro_addback(g_head, tetro);
 			if (j == 0)
 				break ;
+			free(line);
 			i = 0;
 			continue ;
 		}

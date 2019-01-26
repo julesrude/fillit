@@ -1,20 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isprint.c                                       :+:      :+:    :+:   */
+/*   ft_sqrtint.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mivasche <mivasche@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/06 13:25:49 by mivasche          #+#    #+#             */
-/*   Updated: 2018/11/06 13:30:49 by mivasche         ###   ########.fr       */
+/*   Created: 2019/01/26 19:13:14 by yruda             #+#    #+#             */
+/*   Updated: 2019/01/26 19:13:19 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_isprint(int c)
+/*
+** finds a root (whole number) for an int.
+** if the root is not a whole number, it takes the closest whole from the + side
+*/
+
+int		ft_sqrtint(unsigned int i)
 {
-	if (c >= 32 && c <= 126)
-		return (1);
-	return (0);
+	unsigned int	root;
+
+	root = 0;
+	while (root * root < i)
+		root++;
+	return (root);
 }

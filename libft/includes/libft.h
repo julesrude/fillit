@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yruda <yruda@student.unit.ua>              +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/25 15:26:09 by yruda             #+#    #+#             */
-/*   Updated: 2018/11/22 18:24:32 by yruda            ###   ########.fr       */
+/*   Updated: 2019/01/26 19:20:01 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,18 @@ void				ft_lstdel(t_list **alst, void (*del)(void *, size_t));
 void				ft_lstadd(t_list **alst, t_list *new);
 void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
-
-int					ft_iswhitespace(int c);
-size_t				ft_numwords(char const *s);
 t_list				*ft_lstat(t_list *begin_list, unsigned int nbr);
 void				ft_lstaddback(t_list **alst, t_list *new);
 int					ft_lstsize(t_list *begin_list);
+
+int					ft_iswhitespace(int c);
+size_t				ft_numwords(char const *s);
+
+int					ft_maxarr(int *a, int n);
+int					ft_minarr(int *a, int n);
+int					ft_sqrtint(unsigned int i);
+
+void				ft_arrdel(void **arr, int elems);
+char				**ft_arrdup(char **arr, int height, int width);
 
 #endif

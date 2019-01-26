@@ -3,172 +3,119 @@
 /*                                                        :::      ::::::::   */
 /*   solve_tetras.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yruda <yruda@student.unit.ua>              +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/16 20:27:48 by yruda             #+#    #+#             */
-/*   Updated: 2019/01/16 20:28:01 by yruda            ###   ########.fr       */
+/*   Updated: 2019/01/26 19:22:17 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tetrominos.h"
 #include "get_next_line.h"
 
-#include <stdio.h>
-#define COLOR_RED     "\x1b[31m"
-#define COLOR_GREEN   "\x1b[32m"
-#define COLOR_YELLOW  "\x1b[33m"
-#define COLOR_BLUE    "\x1b[34m"
-#define COLOR_MAGENTA "\x1b[35m"
-#define COLOR_CYAN    "\x1b[36m"
-#define COLOR_RESET   "\x1b[0m"
-
-#define COMBINE(a, b) ((a == '.' && b == '.') ? '.' : ((a == '.' COMBINE1(a, b)
-#define COMBINE1(a, b) &&  b == '#') || (a == '#' && b == '.')) ? '#' : 0)
-
 /*
-** Tries to place the tetromino looking over the free places in the map.  -!!!!NO!!!!-
-** Looking over is starting from {x; y} from top to bottom, from left to right.
-** [i, j] are the coordinates of the spot on the tetra we are trying to place.
+** plus_coords - Moves the tetra's further in the map
+** zero_coords - Resets all the next tetras' to the start of the map
 */
 
-int		check_sharps(t_tetromino *tetra, char **current_map, int size, int i, int j)
+int		plus_coords(t_tetromino *tetra)
 {
-	int	x = tetra->x;
-	int	y = tetra->y;
-	int	k = 0;
-	int	l = 0;
-	int	check = 0;
+	if (tetra->x < g_map->size - tetra->width)
+		tetra->x++;
+	else if (tetra->y < g_map->size - tetra->height)
+	{
+		tetra->y++;
+		tetra->x = 0;
+	}
+	else
+		return (0);
+	return (1);
+}
 
-	i = 0;
-	j = 0;
-	while (k < tetra->height)
+int		zero_coords(t_tetromino *tetra)
+{
+	while (tetra)
 	{
-		while (l < tetra->width)
-		{
-			if(COMBINE(tetra->figure[k][l], current_map[x + k][y + l]))
-				check++;
-			else
-			{
-				printf(COLOR_MAGENTA "______i'm plusing______" COLOR_RESET);
-				if(tetra->y < size)
-					tetra->y++;
-				else if (tetra->x < size)
-				{	
-					tetra->x++;
-					tetra->y = 0;
-				}
-				check_sharps(tetra, current_map, map->size, 0, 0);
-				return 0;
-				
-			}
-			l++;
-		}
-		l = 0;
-		k++;
-	}
-	/* to the map */
-	while(i < tetra->height)
-	{
-		while(j < tetra->width)
-		{
-			map->field[tetra->x + i][tetra->y + j] = tetra->figure[i][j];
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-	if(check == tetra->width * tetra->height)
-	{
-		printf(COLOR_MAGENTA "______COOL______\n" COLOR_RESET);
+		tetra->x = 0;
+		tetra->y = 0;
+		tetra = tetra->next;
 	}
 	return (1);
 }
 
-int		place_tetra(t_tetromino *tetra, int size)
+/*
+** Tries to place ONE tetromino looking over the free places in the map.
+** Looking over is starting from {y; x} from top to bottom, from left to right.
+** [i, j] are the coordinates of the spot on the tetra we are trying to place.
+*/
+
+int		check_sharps(t_tetromino *tetra, char **current_map)
 {
-	size = 4;
-	printf(COLOR_RED "HEY" COLOR_RESET);
-	if(!tetra)
-		return(1);
-	printf(COLOR_RED "HEY2" COLOR_RESET);
-	if(!check_sharps(tetra, map->field, map->size, 0, 0))
-		return(0);
-	printf(COLOR_RED "HEY3" COLOR_RESET);
-	if(place_tetra(tetra->next, map->size))
+	int		y;
+	int		x;
+	int		k;
+	int		l;
+
+	y = tetra->y;
+	x = tetra->x;
+	k = -1;
+	l = -1;
+	while (++k < tetra->height)
+	{
+		while (++l < tetra->width)
+		{
+			if (!COMBINE(tetra->figure[k][l], current_map[y + k][x + l]))
+			{
+				if (!plus_coords(tetra))
+					return (0);
+				if (check_sharps(tetra, current_map))
+					return (1);
+				return (0);
+			}
+		}
+		l = -1;
+	}
+	return (1);
+}
+
+/*
+** place_tetras and recursion - Connected recursive functions,
+** the heart of the algorithm
+*/
+
+int		place_tetras(t_tetromino *tetra)
+{
+	if (!tetra)
 		return (1);
-	return(1);
-}
-
-void	create_map(int size)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	map->size = size;
-	map->field = (char **)malloc(size * sizeof(char *));
-	while(i < size)
+	if (check_sharps(tetra, g_map->field))
 	{
-		map->field[i] = (char *)malloc(size * sizeof(char));
-		while(j < size)
+		tetrato_map(tetra);
+		if (place_tetras(tetra->next))
+			return (1);
+		else
 		{
-			map->field[i][j] = '.';
-			j++;
+			reverse_map(tetra);
+			if (plus_coords(tetra) && zero_coords(tetra->next))
+				if (place_tetras(tetra))
+					return (1);
 		}
-		j = 0;
-		i++;
 	}
+	return (0);
 }
 
-int		recursion(t_tetromino *tetra)
+int		recursion(void)
 {
-	/*int i = 0;
-	int j = 0;*/
-	if(!tetra)
-		return(42);
-
-	place_tetra(tetra, map->size);
-/*	check_sharps(tetra, ft_arrdup(map->field, map->size, map->size), map->size, 0, 0);
-	
-	show_tetra(tetra);
-	show_map();
-	ft_putchar('\n');
-	
-	i = 0;
-	j = 0;
-	tetra = tetra->next;
-	check_sharps(tetra, ft_arrdup(map->field, map->size, map->size), map->size, 0, 0);
-	while(i < tetra->height)
+	if (!(*g_head))
+		return (-1);
+	if (place_tetras(*g_head))
+		return (1);
+	else
 	{
-		while(j < tetra->width)
-		{
-			map->field[tetra->x + i][tetra->y + j] = tetra->figure[i][j];
-			j++;
-		}
-		j = 0;
-		i++;
+		ft_arrdel((void **)g_map->field, g_map->size);
+		free(g_map->field);
+		create_map(g_map->size + 1);
+		zero_coords(*g_head);
+		recursion();
 	}
-	show_tetra(tetra);
-	show_map();
-	ft_putchar('\n');*/
-
-	/*if(place_tetra(tetra, ft_arrdup(map->field, map->size, map->size), map->size))
-	{
-		recursion(tetra->next);
-		show_tetra(tetra);
-		show_map();
-		ft_putchar('\n');
-	}*/
-	return 0;
-}
-
-int		solve_tetra(t_tetromino *tetra)
-{
-	int		minimal_map;
-
-	tetra = *head; // shit
-	minimal_map = ft_sqrtint(lst_tetro_size(*head) * 4) + 1;
-	create_map(minimal_map);
-	return (minimal_map);
+	return (1);
 }

@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdio.h>
 
 static char	*ft_putitoa(int n, int symbols, int index, char *result)
 {

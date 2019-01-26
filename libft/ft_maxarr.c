@@ -1,19 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd.c                                        :+:      :+:    :+:   */
+/*   ft_maxarr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mivasche <mivasche@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/20 15:50:24 by mivasche          #+#    #+#             */
-/*   Updated: 2018/11/20 15:58:18 by mivasche         ###   ########.fr       */
+/*   Created: 2019/01/26 19:11:04 by yruda             #+#    #+#             */
+/*   Updated: 2019/01/26 19:18:20 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_lstadd(t_list **alst, t_list *new)
+int		ft_maxarr(int *a, int n)
 {
-	new->next = *alst;
-	*alst = new;
+	int max;
+	int	i;
+
+	i = 1;
+	max = *a;
+	while (i < n)
+	{
+		if (max < a[i])
+			max = a[i];
+		i++;
+	}
+	return (max);
 }
