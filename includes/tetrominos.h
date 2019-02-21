@@ -6,7 +6,7 @@
 /*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/26 18:55:05 by yruda             #+#    #+#             */
-/*   Updated: 2019/01/26 19:31:42 by yruda            ###   ########.fr       */
+/*   Updated: 2019/02/21 18:44:46 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ int				lst_tetro_size(t_tetromino *begin_list);
 
 int				ft_validation(char **tetrimino, int fd, int num_str,
 					int end_tetr);
-void			del_str_all(char **tetr, char *buff);
+
+int				del_str(char **tetr, char *buff);
 
 #endif

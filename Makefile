@@ -9,11 +9,11 @@ LIBFT = libft/libft.a
 all :$(NAME)
 
 $(NAME) : $(LIBFT) $(OBJ)
-	@gcc -g -Wall -Wextra -Werror $(FUNCS) $(LIBFT) -I $(LIBFT_HEAD) -I $(HEADER) -o $(NAME)
+	@gcc -Wall -Wextra -Werror $(FUNCS) $(LIBFT) -I $(LIBFT_HEAD) -I $(HEADER) -o $(NAME)
 	@echo "[ $(NAME) created ]"
 
 %.o: %.c $(HEADER)
-	@gcc -g -Wall -Wextra -Werror  -I $(LIBFT_HEAD) -I $(HEADER) -c $< -o $@
+	@gcc -Wall -Wextra -Werror  -I $(LIBFT_HEAD) -I $(HEADER) -c $< -o $@
 
 $(LIBFT):
 	@make -C libft

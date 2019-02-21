@@ -5,20 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yruda <yruda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/17 15:41:43 by mivasche          #+#    #+#             */
-/*   Updated: 2019/01/26 19:31:12 by yruda            ###   ########.fr       */
+/*   Created: 2019/02/15 17:31:32 by yruda             #+#    #+#             */
+/*   Updated: 2019/02/21 18:47:58 by yruda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tetrominos.h"
 
-int			ft_diff_num(int a, int b, int c, int d)
+int		ft_diff_num(int a, int b, int c, int d)
 {
 	return ((a == c && (b - d == 1 || d - b == 1)) || (b == d && (c - a == 1 ||
 		a - c == 1)));
 }
 
-int			ft_check_connect(int **tetr)
+int		ft_check_connect(int **tetr)
 {
 	int		ind_a;
 	int		ret_num;
@@ -41,7 +41,7 @@ int			ft_check_connect(int **tetr)
 	return (ret_num);
 }
 
-int			ft_tetrimino_connect(char **tetr, int ind, int cha, int ind_save)
+int		ft_tetrimino_connect(char **tetr, int ind, int cha, int ind_save)
 {
 	int		count;
 	int		**save_cha;
@@ -70,7 +70,7 @@ int			ft_tetrimino_connect(char **tetr, int ind, int cha, int ind_save)
 	return (count == 6 || count == 8 ? 1 : 0);
 }
 
-int			ft_valid_file(char **tetr, int index, int index_char)
+int		ft_valid_file(char **tetr, int index, int index_char)
 {
 	int		dot;
 	int		sharp;
@@ -97,32 +97,31 @@ int			ft_valid_file(char **tetr, int index, int index_char)
 	return (1);
 }
 
-int			ft_validation(char **tetr, int fd, int num_str, int end_tetr)
+int		ft_validation(char **tetr, int fd, int num_str, int end_tetr)
 {
 	char	*buff;
 	int		check;
 
 	check = 0;
-	tetr = (char **)malloc(sizeof(char *) * 4);
-	*tetr = NULL;
+	(tetr = (char **)ft_memalloc(sizeof(char *) * 4));
 	while ((get_next_line(fd, &buff)))
 	{
-		if (++num_str == 5)
-		{
-			del_str_all(tetr, buff);
-			return (0);
-		}
+		if ((++num_str == 4 && buff[0] != 0) || check == 26 ||
+			(buff[0] == 0 && num_str < 4))
+			return (del_str(tetr, buff));
 		if (buff[0] != 0)
 			tetr[num_str] = ft_strdup(buff);
 		else
 		{
 			check++;
-			(ft_valid_file(tetr, 0, 0)) == 1 ? end_tetr++ : 0;
+			if (!ft_valid_file(tetr, 0, 0))
+				return (del_str(tetr, buff));
+			end_tetr++;
 			num_str = -1;
 		}
-		free(buff);
+		ft_strdel(&buff);
 	}
 	(ft_valid_file(tetr, 0, 0)) == 1 ? end_tetr++ : 0;
-	free(tetr);
-	return ((end_tetr == (check + 1)) ? 1 : 0);
+	del_str(tetr, buff);
+	return (end_tetr == (check + 1) ? 1 : 0);
 }
